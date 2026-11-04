@@ -1,0 +1,73 @@
+plugins {
+    id 'fabric-loom' version '1.15.5'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.fabricmc.net/' }
+    flatDir { dirs 'libs' }
+    maven {
+        url 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    include modImplementation(name: 'geckolib-G1BvHQDL')
+
+    include implementation(name: 'antlr4-runtime-4.13.1')
+    include implementation(name: 'glsl-transformer-2.0.1')
+    include implementation(name: 'java-spotify-api-1.4.7')
+    include implementation(name: 'jcpp-1.4.14')
+    include implementation(name: 'lwjgl-nanovg-3.3.3')
+
+    modCompileOnly "maven.modrinth:mcef-modern:${project.mcef_version}"
+    compileOnly name: 'jcef-api-146.0.10'
+    compileOnly name: 'jcef-api-146.0.10'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    compileOnly 'io.projectreactor.netty:reactor-netty-http:1.2.5'
+    compileOnly 'org.reactivestreams:reactive-streams:1.0.4'
+    compileOnly "org.openjfx:javafx-base:21.0.5:win"
+    compileOnly "org.openjfx:javafx-graphics:21.0.5:win"
+    compileOnly "org.openjfx:javafx-web:21.0.5:win"
+    compileOnly "org.openjfx:javafx-swing:21.0.5:win"
+}
+
+loom {
+    mixin {
+        useLegacyMixinAp = true
+        defaultRefmapName = 'silver-refmap.json'
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+    it.options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
